@@ -26,7 +26,7 @@ module p_if(
     reg[31:0] tmp_pc;
     wire read_enable;
     reg[31:0] local_inst;
-    reg state;
+    reg[2:0] state;
     reg is_discarded;
 
     localparam STATE_IDLE = 0;

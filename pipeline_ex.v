@@ -21,7 +21,7 @@ module p_ex(
     output reg[31:0] out_w_addr,
     output reg[31:0] out_w_data,
 
-    output reg[2:0] out_inst_catagory,
+    output reg[4:0] out_opcode,
     output reg[31:0] mem_addr,
     
     output wire busy_out
@@ -32,16 +32,18 @@ module p_ex(
             out_we <= 0;
             out_w_addr <= 0;
             out_w_data <= 0;
+            out_opcode <= `INS_EMP;
             busy_out <= 0;
         end 
         else if (busy_in) begin
-            busy_out <= 1;
             out_we <= 0;
             out_w_addr <= 0;
             out_w_data <= 0;
+            out_opcode <= `INS_EMP;
+            busy_out <= 1;
         end
         else begin
-            out_inst_catagory <= inst_catagory;
+            out_opcode <= local_opcode;
             out_we <= we;
             out_w_addr <= w_addr;
             busy_out <= 0;
@@ -81,7 +83,7 @@ module p_ex(
                     mem_addr <= 0;
                 end
                 `INS_SRA: begin
-                    out_w_data <= {32{ari_op1[31]} << (6'b100000 - {1'b0, ari_op2[4:0]})} | (ari_op1 >> ari_op2[4:0]);
+                    out_w_data <= $signed(ari_op1) >>> ari_op2[4:0];
                     mem_addr <= 0;
                 end
                 endcase
