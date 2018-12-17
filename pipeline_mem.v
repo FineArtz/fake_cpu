@@ -20,6 +20,7 @@ module p_mem(
     output reg l_re,
     output reg s_we,
     output reg[2:0] len_in_byte, 
+    output wire[1:0] port_id,
     input wire mem_busy,
     input wire mem_done,
     //output
@@ -29,6 +30,9 @@ module p_mem(
     output wire busy_out
 );
 
+    assign port_id[0] = 0;
+    assign port_id[1] = 1;
+    
     reg state;
     localparam STATE_IDLE = 0;
     localparam STATE_WATING_FOR_MC = 1;
@@ -120,6 +124,7 @@ module p_mem(
                     endcase
                     busy_out <= 0;
                     state <= STATE_IDLE;
+                    send_to_mc(0, 0, 0, 0, 0);
                 end
             end
             endcase
