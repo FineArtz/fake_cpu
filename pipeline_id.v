@@ -4,7 +4,6 @@
 
 module p_id(
     //common
-    input clk_in,
     input rst_in,
     input rdy_in,
     //instruction
@@ -16,8 +15,6 @@ module p_id(
     output reg[31:0] r_addr1,
     output reg re2,
     output reg[31:0] r_addr2,
-    output reg we,
-    output reg[31:0] w_addr,
     //data from regfile
     input wire[31:0] r_data1,
     input wire[31:0] r_data2,
@@ -34,6 +31,8 @@ module p_id(
     output wire[31:0] next_addr,
     output wire[31:0] link_addr,
     output reg[31:0] offset,
+    output reg we,
+    output reg[31:0] w_addr,
 
     output reg[2:0] inst_catagory,
     output reg[4:0] local_opcode,

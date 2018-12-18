@@ -7,13 +7,13 @@ module mc(
     input wire rst_in,
     input wire rdy_in,
     //memory access
-    input wire re,
-    input wire we,
-    input wire[1:0] port_id, //1 for if, 2 for mem
-    input wire[31:0] addr,
-    input wire[31:0] w_data,
-    output reg[31:0] r_data,
-    input wire[2:0] len_in_byte,
+    input wire re[1:0],
+    input wire we[1:0],
+    input wire[1:0] port_id[1:0], //1 for if, 2 for mem
+    input wire[31:0] addr[1:0],
+    input wire[31:0] w_data[1:0],
+    output reg[31:0] r_data[1:0],
+    input wire[2:0] len_in_byte[1:0],
     //cpu interface
     output reg mem_wr, //1 for write
     output reg[7:0] mem_w_data,
@@ -24,9 +24,9 @@ module mc(
     output reg state_done[1:0]
 );
 
-    wire[1:0] rw_flag; //1 for write, 2 for read
-    assign rw_flag[0] = we;
-    assign rw_flag[1] = re;
+    wire[1:0] rw_flag[1:0]; //1 for write, 2 for read
+    assign rw_flag[0] = {re[0], we[0]};
+    assign rw_flag[1] = {re[1], we[1]};
 
     reg[1:0] pending_rw_flag[1:0];
     reg[31:0] pending_addr[1:0];
@@ -41,11 +41,12 @@ module mc(
     task set_pending:
         input wire p_id;
         begin
-            if (local_rw_flag != 0 && state_busy[p_id] == 0) begin
-                pending_rw_flag[p_id] <= local_rw_flag;
-                pending_addr[p_id] <= addr;
-                pending_w_data[p_id] <= w_data;
-                pending_data_len[p_id] <= len_in_byte;
+            if (local_rw_flag[p_id] != 0 && state_busy[p_id] == 0) begin
+                pending_rw_flag[p_id] <= local_rw_flag[p_id];
+                pending_addr[p_id] <= addr[p_id];
+                pending_w_data[p_id] <= w_data[p_id];
+                pending_data_len[p_id] <= len_in_byte[p_id];
+                pending_port[p_id] <= p_id;
                 state_busy[p_id] <= 1;
             end
         end
@@ -82,8 +83,10 @@ module mc(
         if (rst_in) begin
             state <= STATE_IDLE;
             state_busy <= 0;
-            r_data <= 0;
-            wait_port <= 0;
+            r_data[0] <= 0;
+            r_data[1] <= 1;
+            wait_port <= NOPORT;
+            serv_port <= NOPORT;
             local_r_data <= 0;
             for (j = 0; j < 2; j = j + 1) begin
                 pending_rw_flag[j] <= 0;
@@ -119,7 +122,7 @@ module mc(
             STATE_WAIT_FOR_RECV_1: begin
                 local_r_data[pending_data_len[serv_port] * 8 - 1 : pending_data_len[serv_port] * 8 - 8] <= mem_r_data;
                 if (pending_data_len[serv_port] == 1) begin
-                    r_data <= local_r_data;
+                    r_data[pending_port[serv_port]] <= local_r_data;
                     state_busy[pending_port[serv_port]] <= 0;
                     state_done[pending_port[serv_port]] <= 1;
                     pending_rw_flag[serv_port] <= 0;
@@ -144,7 +147,7 @@ module mc(
             STATE_WAIT_FOR_RECV_2: begin
                 local_r_data[pending_data_len[serv_port] * 8 - 9 : pending_data_len[serv_port] * 8 - 16] <= mem_r_data;
                 if (pending_data_len[serv_port] == 2) begin
-                    r_data <= local_r_data;
+                    r_data[pending_port[serv_port]] <= local_r_data;
                     state_busy[pending_port[serv_port]] <= 0;
                     state_done[pending_port[serv_port]] <= 1;
                     pending_rw_flag[serv_port] <= 0;
@@ -176,7 +179,7 @@ module mc(
             end
             STATE_WAIT_FOR_RECV_4: begin
                 local_r_data[pending_data_len[serv_port] * 8 - 25 : pending_data_len[serv_port] * 8 - 32] <= mem_r_data;
-                r_data <= local_r_data;
+                r_data[pending_port[serv_port]] <= local_r_data;
                 state_busy[pending_port[serv_port]] <= 0;
                 state_done[pending_port[serv_port]] <= 1;
                 pending_rw_flag[serv_port] <= 0;
