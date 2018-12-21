@@ -69,11 +69,14 @@ module single_port_ram_sync
   input  wire                  we,
   input  wire [ADDR_WIDTH-1:0] addr_a,
   input  wire [DATA_WIDTH-1:0] din_a,
-  output wire [DATA_WIDTH-1:0] dout_a
+  output wire [DATA_WIDTH-1:0] dout_a,
+  output wire [DATA_WIDTH-1:0] ram0
 );
 
 reg [DATA_WIDTH-1:0] ram [2**ADDR_WIDTH-1:0];
 reg [ADDR_WIDTH-1:0] q_addr_a;
+
+assign ram0 = ram[0];
 
 always @(posedge clk)
   begin
@@ -90,7 +93,9 @@ initial begin
   for (i=0;i<2**ADDR_WIDTH;i=i+1) begin
     ram[i] = 0;
   end
+  #1
   $readmemh("test.data", ram); // add test.data to vivado project or specify a valid file path
+  $display(ram[0]);
 end
 
 endmodule

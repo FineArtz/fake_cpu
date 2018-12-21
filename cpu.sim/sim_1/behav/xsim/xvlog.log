@@ -7,8 +7,30 @@ INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/
 INFO: [VRFC 10-311] analyzing module fifo
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/hci.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module hci
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/mc.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module mc
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/pipeline_ex.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module p_ex
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/pipeline_id.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module p_id
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/pipeline_if.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module p_if
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/pipeline_mem.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module p_mem
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/ram.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module ram
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/reg_ex_mem.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module r_ex_mem
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/reg_id_ex.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module r_id_ex
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/reg_if_id.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module r_if_id
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/reg_mem_wb.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module r_mem_wb
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/regfile.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module regfile
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/riscv_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module riscv_top
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/uart/uart.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module uart
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/uart/uart_baud_clk.v" into library xil_defaultlib
@@ -17,7 +39,5 @@ INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/
 INFO: [VRFC 10-311] analyzing module uart_rx
 INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/uart/uart_tx.v" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module uart_tx
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/riscv_top.v" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module riscv_top
-INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
-INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sim_1/imports/sim/testbench.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module testbench

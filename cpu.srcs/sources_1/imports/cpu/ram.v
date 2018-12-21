@@ -22,7 +22,8 @@ single_port_ram_sync #(.ADDR_WIDTH(ADDR_WIDTH),
   .we(ram_bram_we),
   .addr_a(a_in),
   .din_a(d_in),
-  .dout_a(ram_bram_dout)
+  .dout_a(ram_bram_dout),
+  .ram0()
 );
 
 assign ram_bram_we = (en_in) ? ~r_nw_in      : 1'b0;
