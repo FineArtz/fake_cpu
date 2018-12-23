@@ -31,7 +31,7 @@
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSAVendor" Val="xilinx"/>
     <Option Name="DSANumComputeUnits" Val="60"/>
-    <Option Name="WTXSimLaunchSim" Val="48"/>
+    <Option Name="WTXSimLaunchSim" Val="143"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -277,10 +277,18 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sim_1/imports/test/inst.data">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="G:/CompArch/Arch2018/riscv/test/inst.data"/>
+          <Attr Name="ImportTime" Val="1545443198"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sim_1/imports/test/test.data">
         <FileInfo>
           <Attr Name="ImportPath" Val="G:/CompArch/Arch2018/riscv/test/test.data"/>
-          <Attr Name="ImportTime" Val="1545221251"/>
+          <Attr Name="ImportTime" Val="1545541014"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>

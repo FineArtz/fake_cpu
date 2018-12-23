@@ -201,7 +201,7 @@ module p_id(
                     end
                 end
                 `FUNCT3_BGEU: begin
-                    if (ari_op1 < ari_op2) begin 
+                    if (ari_op1 >= ari_op2) begin 
                         fill_inst(1, rs1, 1, rs2, 0, 0, `IC_JMP, `INS_BGEU, 0, 0, 0, 1, PC_PLUS_B, 0);
                     end
                     else begin
@@ -216,7 +216,7 @@ module p_id(
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LB, 0, 0, imm_I, 0, 0, 0);
                 end
                 `FUNCT3_LH: begin
-                    fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LB, 0, 0, imm_I, 0, 0, 0);
+                    fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LH, 0, 0, imm_I, 0, 0, 0);
                 end
                 `FUNCT3_LW: begin
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LW, 0, 0, imm_I, 0, 0, 0);
@@ -235,10 +235,10 @@ module p_id(
                     fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
                 end
                 `FUNCT3_SH: begin
-                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SH, 0, 0, imm_S, 0, 0, 0);
                 end
                 `FUNCT3_SW: begin
-                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SW, 0, 0, imm_S, 0, 0, 0);
                 end
                 endcase
             end
@@ -290,7 +290,7 @@ module p_id(
                     endcase
                 end
                 `FUNCT3_SLL: begin
-                    fill_inst(1, rs1, 1, rs2, 1, rd, `IC_LGC, `INS_SLL, 0, 0, 0, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 1, rd, `IC_SFT, `INS_SLL, 0, 0, 0, 0, 0, 0);
                 end
                 `FUNCT3_SLT: begin
                     fill_inst(1, rs1, 1, rs2, 1, rd, `IC_ARI, `INS_SLT, 0, 0, 0, 0, 0, 0);
@@ -371,7 +371,7 @@ module p_id(
             r2_busy = 0;
         end
         else if (re2) begin
-            ari_op2 = r_data1;
+            ari_op2 = r_data2;
             r2_busy = 0;
         end
         else if (!re2) begin

@@ -14,7 +14,9 @@ module r_if_id(
     //to id
     output reg[31:0] id_inst_pc,
     output reg[31:0] id_inst,
-    output reg busy_out
+    output reg busy_out,
+    
+    input wire mem_stall
 );
 
     always @ (posedge clk_in or posedge rst_in) begin
@@ -28,7 +30,7 @@ module r_if_id(
             id_inst <= 0;
             busy_out <= 1;
         end 
-        else begin  
+        else if (!mem_stall) begin  
             id_inst_pc <= if_inst_pc;
             id_inst <= if_inst;
             busy_out <= 0;

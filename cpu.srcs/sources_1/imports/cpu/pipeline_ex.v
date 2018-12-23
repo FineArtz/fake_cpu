@@ -49,7 +49,7 @@ module p_ex(
             busy_out = 0;
             case (inst_catagory)
             `IC_LAS: begin
-                out_w_data = 0;
+                out_w_data = ari_op2;
                 mem_addr = ari_op1 + offset;
             end
             `IC_ARI: begin
@@ -100,6 +100,14 @@ module p_ex(
                 end
                 `INS_AND: begin
                     out_w_data = ari_op1 & ari_op2;
+                    mem_addr = 0;
+                end
+                endcase
+            end
+            `IC_JMP: begin
+                case (local_opcode)
+                `INS_JAL, `INS_JALR: begin
+                    out_w_data = link_addr;
                     mem_addr = 0;
                 end
                 endcase

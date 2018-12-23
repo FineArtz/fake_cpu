@@ -195,7 +195,8 @@ module cpu(
         .mem_done(if_mem_done),
         .inst_pc(if_inst_pc),
         .inst(if_inst),
-        .busy_out(if_busy_out)
+        .busy_out(if_busy_out),
+        .mem_stall(mem_busy_out)
     );
 
     r_if_id r_if_id0(
@@ -207,7 +208,8 @@ module cpu(
         .busy_in(if_busy_out),
         .id_inst_pc(id_inst_pc),
         .id_inst(id_inst),
-        .busy_out(id_busy_in)
+        .busy_out(id_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_id p_id0(
@@ -263,7 +265,8 @@ module cpu(
         .ex_w_addr(ex_w_addr),
         .ex_link_addr(ex_link_addr),
         .ex_offset(ex_offset),
-        .busy_out(ex_busy_in)
+        .busy_out(ex_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_ex p_ex0(
@@ -301,7 +304,8 @@ module cpu(
         .mem_w_data(mem_mem_w_data),
         .mem_opcode(mem_mem_opcode),
         .mem_mem_addr(mem_mem_addr),
-        .busy_out(mem_busy_in)
+        .busy_out(mem_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_mem p_mem0(
@@ -338,7 +342,8 @@ module cpu(
         .busy_in(mem_busy_out),
         .wb_we(wb_we),
         .wb_w_addr(wb_w_addr),
-        .wb_w_data(wb_w_data)
+        .wb_w_data(wb_w_data),
+        .mem_stall(mem_busy_out)
     );
 
 endmodule

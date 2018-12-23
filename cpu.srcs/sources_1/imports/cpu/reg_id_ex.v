@@ -26,7 +26,9 @@ module r_id_ex(
     output reg[31:0] ex_w_addr,
     output reg[31:0] ex_link_addr,
     output reg[31:0] ex_offset,
-    output reg busy_out
+    output reg busy_out,
+    
+    input wire mem_stall
 );
     always @ (posedge clk_in or posedge rst_in) begin
         if (rst_in) begin
@@ -51,7 +53,7 @@ module r_id_ex(
             ex_offset <= 0;
             busy_out <= 1;
         end
-        else begin
+        else if (!mem_stall) begin
             ex_inst_catagory <= id_inst_catagory;
             ex_local_opcode <= id_local_opcode;
             ex_ari_op1 <= id_ari_op1;

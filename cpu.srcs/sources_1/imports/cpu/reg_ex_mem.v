@@ -20,7 +20,9 @@ module r_ex_mem(
     output reg[31:0] mem_w_data,
     output reg[4:0] mem_opcode,
     output reg[31:0] mem_mem_addr,
-    output reg busy_out
+    output reg busy_out,
+    
+    input wire mem_stall
 );
 
     always @ (posedge clk_in or posedge rst_in) begin 
@@ -40,7 +42,7 @@ module r_ex_mem(
             mem_mem_addr <= 0;
             busy_out <= 1;
         end
-        else begin
+        else if (!mem_stall) begin
             mem_we <= ex_we;
             mem_w_addr <= ex_w_addr;
             mem_w_data <= ex_w_data;

@@ -4,36 +4,4 @@ Running: D:/Xlinix_Vivado/Vivado/2018.2/bin/unwrapped/win64.o/xelab.exe -wto c1c
 Using 2 slave threads.
 Starting static elaboration
 Completed static elaboration
-Starting simulation data flow analysis
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/block_ram/block_ram.v" Line 62. Module single_port_ram_sync(ADDR_WIDTH=17) doesn't have a timescale but at least one module in design has a timescale.
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/cpu.v" Line 4. Module cpu doesn't have a timescale but at least one module in design has a timescale.
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/hci.v" Line 30. Module hci doesn't have a timescale but at least one module in design has a timescale.
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/fifo/fifo.v" Line 27. Module fifo(ADDR_BITS=10) doesn't have a timescale but at least one module in design has a timescale.
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/fifo/fifo.v" Line 27. Module fifo doesn't have a timescale but at least one module in design has a timescale.
-WARNING: [XSIM 43-4099] "C:/Users/Administrator/Desktop/cpu/cpu/cpu.srcs/sources_1/imports/cpu/common/fifo/fifo.v" Line 27. Module fifo(ADDR_BITS=10) doesn't have a timescale but at least one module in design has a timescale.
-Completed simulation data flow analysis
-Time Resolution for simulation is 1ps
-Compiling module xil_defaultlib.single_port_ram_sync(ADDR_WIDTH=...
-Compiling module xil_defaultlib.ram
-Compiling module xil_defaultlib.mc
-Compiling module xil_defaultlib.regfile
-Compiling module xil_defaultlib.p_if
-Compiling module xil_defaultlib.r_if_id
-Compiling module xil_defaultlib.p_id
-Compiling module xil_defaultlib.r_id_ex
-Compiling module xil_defaultlib.p_ex
-Compiling module xil_defaultlib.r_ex_mem
-Compiling module xil_defaultlib.p_mem
-Compiling module xil_defaultlib.r_mem_wb
-Compiling module xil_defaultlib.cpu
-Compiling module xil_defaultlib.fifo(ADDR_BITS=10)
-Compiling module xil_defaultlib.uart_baud_clk(SYS_CLK_FREQ=10000...
-Compiling module xil_defaultlib.uart_rx_default
-Compiling module xil_defaultlib.uart_tx_default
-Compiling module xil_defaultlib.fifo
-Compiling module xil_defaultlib.uart(SYS_CLK_FREQ=100000000,BAUD...
-Compiling module xil_defaultlib.hci
-Compiling module xil_defaultlib.riscv_top(SIM=1)
-Compiling module xil_defaultlib.testbench
-Compiling module xil_defaultlib.glbl
-Built simulation snapshot testbench_behav
+INFO: [XSIM 43-4323] No Change in HDL. Linking previously generated obj files to create kernel

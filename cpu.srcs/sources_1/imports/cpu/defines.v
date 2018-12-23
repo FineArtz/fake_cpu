@@ -7,7 +7,7 @@
 `define OP_AUIPC    7'b0010111
 `define OP_JAL      7'b1101111
 `define OP_JALR     7'b1100111
-`define OP_BX       7'b1100111
+`define OP_BX       7'b1100011
 `define OP_LX       7'b0000011
 `define OP_SX       7'b0100011
 `define OP_AI       7'b0010011

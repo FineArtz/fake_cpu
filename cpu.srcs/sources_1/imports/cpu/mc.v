@@ -156,6 +156,7 @@ module mc(
                         pending_w_data[wait_port][7:0]);
                         serv_port <= wait_port;
                         state_busy[wait_port] <= 1;
+                        state_done[wait_port] <= 0;
                         state <= STATE_WAIT_FOR_RECV_1;
                     end
                 end
