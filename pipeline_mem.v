@@ -27,7 +27,7 @@ module p_mem(
     output reg out_we,
     output reg[31:0] out_w_addr,
     output reg[31:0] out_w_data,
-    output wire busy_out
+    output reg busy_out
 );
 
     assign port_id[0] = 0;
@@ -37,40 +37,40 @@ module p_mem(
     localparam STATE_IDLE = 0;
     localparam STATE_WATING_FOR_MC = 1;
 
-    task send_to_mc:
+    task send_to_mc;
         input wire _l_re;
         input wire _s_we;
         input wire[31:0] _sl_addr;
         input wire[31:0] _s_data;
         input wire[2:0] _len_in_byte;
         begin
-            l_re <= _l_re;
-            s_we <= _s_we;
-            sl_addr <= _sl_addr;
-            s_data <= _s_data;
-            len_in_byte <= _len_in_byte;
+            l_re = _l_re;
+            s_we = _s_we;
+            sl_addr = _sl_addr;
+            s_data = _s_data;
+            len_in_byte = _len_in_byte;
         end
     endtask
 
     always @ (*) begin 
         if (rst_in) begin
-            state <= STATE_IDLE;
+            state = STATE_IDLE;
             send_to_mc(0, 0, 0, 0, 0);
-            out_we <= 0;
-            out_w_addr <= 0;
-            out_w_data <= 0;
-            busy_out <= 0;
+            out_we = 0;
+            out_w_addr = 0;
+            out_w_data = 0;
+            busy_out = 0;
         end
         else if (busy_in) begin
             send_to_mc(0, 0, 0, 0, 0);
-            out_we <= 0;
-            out_w_addr <= 0;
-            out_w_data <= 0;
-            busy_out <= 1;
+            out_we = 0;
+            out_w_addr = 0;
+            out_w_data = 0;
+            busy_out = 1;
         end
         else begin
-            out_we <= we;
-            out_w_addr <= w_addr;
+            out_we = we;
+            out_w_addr = w_addr;
             case (state)
             STATE_IDLE: begin
                 case (opcode)
@@ -92,38 +92,46 @@ module p_mem(
                 `INS_SW: begin
                     send_to_mc(0, 1, mem_addr, w_data, 4);
                 end
+                default: begin
+                    out_w_data <= w_data;
+                end
                 endcase
-                state <= (opcode == `INS_LB || opcode == `INS_LBU || opcode == `INS_LH || opcode == `INS_LHU || opcode == `INS_LW
+                state = (opcode == `INS_LB || opcode == `INS_LBU || opcode == `INS_LH || opcode == `INS_LHU || opcode == `INS_LW
                        || opcode == `INS_SB || opcode == `INS_SH || opcode == `INS_SW) ? STATE_WATING_FOR_MC : STATE_IDLE;
-                busy_out <= 1;
+                if (state) begin
+                    busy_out = 1;
+                end
+                else begin
+                    busy_out = 0;
+                end
             end
             STATE_WATING_FOR_MC: begin
                 if (mem_busy) begin
-                    busy_out <= 1;
+                    busy_out = 1;
                 end
                 else if (mem_done) begin
                     case (opcode)
                     `INS_LB: begin
-                        out_w_data <= {24{l_data[7]}, l_data[7:0]};
+                        out_w_data = {{24{l_data[7]}}, l_data[7:0]};
                     end
                     `INS_LBU: begin
-                        out_w_data <= {24'b0, l_data[7:0]};
+                        out_w_data = {24'b0, l_data[7:0]};
                     end
                     `INS_LH: begin
-                        out_w_data <= {16{l_data[15]}, l_data[15:0]};
+                        out_w_data = {{16{l_data[15]}}, l_data[15:0]};
                     end
                     `INS_LHU: begin
-                        out_w_data <= {16'b0, l_data[15:0]};
+                        out_w_data = {16'b0, l_data[15:0]};
                     end
                     `INS_LW: begin
-                        out_w_data <= l_data;
+                        out_w_data = l_data;
                     end
-                    default:
-                        out_w_data <= 0;
+                    default: begin
+                        out_w_data = 0;
                     end
                     endcase
-                    busy_out <= 0;
-                    state <= STATE_IDLE;
+                    busy_out = 0;
+                    state = STATE_IDLE;
                     send_to_mc(0, 0, 0, 0, 0);
                 end
             end

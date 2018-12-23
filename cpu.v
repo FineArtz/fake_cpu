@@ -4,7 +4,7 @@
 module cpu(
     input  wire                 clk_in,			// system clock signal
     input  wire                 rst_in,			// reset signal
-	  input  wire					        rdy_in,			// ready signal, pause cpu when low
+	input  wire					 rdy_in,			// ready signal, pause cpu when low
 
     input  wire [ 7:0]          mem_din,		// data input bus
     output wire [ 7:0]          mem_dout,		// data output bus
@@ -20,10 +20,10 @@ module cpu(
     wire[7:0] mc_mem_w_data;
     wire[31:0] mc_mem_addr; 
 
-    assign mc_mem_wr = mem_wr;
+    assign mem_wr = mc_mem_wr;
     assign mc_mem_r_data = mem_din;
-    assign mc_mem_w_data = mem_dout;
-    assign mc_mem_addr = mem_a;
+    assign mem_dout = mc_mem_w_data;
+    assign mem_a = mc_mem_addr;
 
     //memory controller to IF
     wire if_re;
@@ -162,8 +162,8 @@ module cpu(
 
     // MEM/WB to Regfile
     wire wb_we;
-    wire wb_w_addr;
-    wire wb_w_data;
+    wire[31:0] wb_w_addr;
+    wire[31:0] wb_w_data;
 
     regfile regfile0(
         .clk_in(clk_in),
@@ -181,6 +181,7 @@ module cpu(
     );
 
     p_if p_if0(
+        .clk_in(clk_in),
         .rst_in(rst_in),
         .rdy_in(rdy_in),
         .jump(jump),
@@ -194,7 +195,8 @@ module cpu(
         .mem_done(if_mem_done),
         .inst_pc(if_inst_pc),
         .inst(if_inst),
-        .busy_out(if_busy_out)
+        .busy_out(if_busy_out),
+        .mem_stall(mem_busy_out)
     );
 
     r_if_id r_if_id0(
@@ -206,7 +208,8 @@ module cpu(
         .busy_in(if_busy_out),
         .id_inst_pc(id_inst_pc),
         .id_inst(id_inst),
-        .busy_out(id_busy_in)
+        .busy_out(id_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_id p_id0(
@@ -262,7 +265,8 @@ module cpu(
         .ex_w_addr(ex_w_addr),
         .ex_link_addr(ex_link_addr),
         .ex_offset(ex_offset),
-        .busy_out(ex_busy_in)
+        .busy_out(ex_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_ex p_ex0(
@@ -300,7 +304,8 @@ module cpu(
         .mem_w_data(mem_mem_w_data),
         .mem_opcode(mem_mem_opcode),
         .mem_mem_addr(mem_mem_addr),
-        .busy_out(mem_busy_in)
+        .busy_out(mem_busy_in),
+        .mem_stall(mem_busy_out)
     );
 
     p_mem p_mem0(
@@ -320,7 +325,7 @@ module cpu(
         .len_in_byte(mem_len_in_byte),
         .port_id(mem_port_id),
         .mem_busy(mem_mem_busy),
-        .mem_donw(mem_mem_done),
+        .mem_done(mem_mem_done),
         .out_we(mem_out_we),
         .out_w_addr(mem_out_w_addr),
         .out_w_data(mem_out_w_data),
@@ -337,7 +342,8 @@ module cpu(
         .busy_in(mem_busy_out),
         .wb_we(wb_we),
         .wb_w_addr(wb_w_addr),
-        .wb_w_data(wb_w_data)
+        .wb_w_data(wb_w_data),
+        .mem_stall(mem_busy_out)
     );
 
 endmodule

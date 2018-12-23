@@ -7,8 +7,8 @@ module p_id(
     input rst_in,
     input rdy_in,
     //instruction
-    input reg[31:0] inst_pc,
-    input reg[31:0] inst,
+    input wire[31:0] inst_pc,
+    input wire[31:0] inst,
     input wire busy_in,
     //data to regfile
     output reg re1,
@@ -27,9 +27,9 @@ module p_id(
     input wire[31:0] mem_w_addr,
     input wire[31:0] mem_w_data,
     //output
-    output wire jump,
-    output wire[31:0] next_addr,
-    output wire[31:0] link_addr,
+    output reg jump,
+    output reg[31:0] next_addr,
+    output reg[31:0] link_addr,
     output reg[31:0] offset,
     output reg we,
     output reg[31:0] w_addr,
@@ -74,10 +74,10 @@ module p_id(
     wire[31:0] PC_PLUS_B;
     wire[31:0] PC_PLUS_J;
 
-    assign PC_PLUS_4 = pc + 4; //for LINK
+    assign PC_PLUS_4 = inst_pc + 4; //for LINK
     assign RS1_PLUS_I = r_data1 + imm_I; //for JALR
-    assign PC_PLUS_B = pc + imm_B; //for BRANCH
-    assign PC_PLUS_J = pc + imm_J; //for JAL
+    assign PC_PLUS_B = inst_pc + imm_B; //for BRANCH
+    assign PC_PLUS_J = inst_pc + imm_J; //for JAL
 
    /* wire IS_EQ;
     wire IS_NE;
@@ -93,17 +93,22 @@ module p_id(
     assign IS_LTU = (ari_op1 < ari_op2);
     assign IS_GEU = (ari_op1 >= ari_op2);
 */
+    
+    reg inst_busy;
+    reg r1_busy;
+    reg r2_busy;
+    assign busy_out = inst_busy | r1_busy | r2_busy;
 
     reg[31:0] tmp_ari_op1;
     reg[31:0] tmp_ari_op2;
 
-    task fill_inst:
+    task fill_inst;
         input reg _re1; 
         input reg[31:0] _r_addr1;
         input reg _re2; 
         input reg[31:0] _r_addr2;
         input reg _we;
-        input reg _w_addr;
+        input reg[31:0] _w_addr;
         input reg[2:0] _inst_catagory;
         input reg[4:0] _local_opcode;
         input reg[31:0] _tmp_ari_op1;
@@ -113,26 +118,31 @@ module p_id(
         input wire[31:0] _next_addr;
         input wire[31:0] _link_addr;
         begin
-            re1 <= _re1;
-            r_addr1 <= _r_addr1;
-            re2 <= _re2;
-            r_addr2 <= _r_addr2;
-            we <= _we;
-            w_addr <= _w_addr;
-            inst_catagory <= _inst_catagory;
-            local_opcode <= _local_opcode;
-            tmp_ari_op1 <= _tmp_ari_op1;
-            tmp_ari_op2 <= _tmp_ari_op2;
-            offset <= _offset;
-            jump <= _jump;
-            next_addr <= _next_addr;
-            link_addr <= _link_addr;
+            re1 = _re1;
+            r_addr1 = _r_addr1;
+            re2 = _re2;
+            r_addr2 = _r_addr2;
+            we = _we;
+            w_addr = _w_addr;
+            inst_catagory = _inst_catagory;
+            local_opcode = _local_opcode;
+            tmp_ari_op1 = _tmp_ari_op1;
+            tmp_ari_op2 = _tmp_ari_op2;
+            offset = _offset;
+            jump = _jump;
+            next_addr = _next_addr;
+            link_addr = _link_addr;
         end 
     endtask
 
     always @ (*) begin 
         if (rst_in) begin
             fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+            inst_busy = 0;
+        end
+        else if (busy_in) begin
+            fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+            inst_busy = 1;
         end
         else begin
             case (opcode)
@@ -140,7 +150,7 @@ module p_id(
                 fill_inst(0, 0, 0, 0, 1, rd, `IC_ARI, `INS_ADD, imm_U, 0, 0, 0, 0, 0);
             end
             `OP_AUIPC: begin
-                fill_inst(0, 0, 0, 0, 1, rd, `IC_ARI, `INS_ADD, imm_U, pc, 0, 0, 0, 0);
+                fill_inst(0, 0, 0, 0, 1, rd, `IC_ARI, `INS_ADD, imm_U, inst_pc, 0, 0, 0, 0);
             end
             `OP_JAL: begin
                 fill_inst(0, 0, 0, 0, 1, rd, `IC_JMP, `INS_JAL, 0, 0, 0, 1, PC_PLUS_J, PC_PLUS_4);
@@ -191,7 +201,7 @@ module p_id(
                     end
                 end
                 `FUNCT3_BGEU: begin
-                    if (ari_op1 < ari_op2) begin 
+                    if (ari_op1 >= ari_op2) begin 
                         fill_inst(1, rs1, 1, rs2, 0, 0, `IC_JMP, `INS_BGEU, 0, 0, 0, 1, PC_PLUS_B, 0);
                     end
                     else begin
@@ -206,7 +216,7 @@ module p_id(
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LB, 0, 0, imm_I, 0, 0, 0);
                 end
                 `FUNCT3_LH: begin
-                    fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LB, 0, 0, imm_I, 0, 0, 0);
+                    fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LH, 0, 0, imm_I, 0, 0, 0);
                 end
                 `FUNCT3_LW: begin
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LW, 0, 0, imm_I, 0, 0, 0);
@@ -217,7 +227,7 @@ module p_id(
                 `FUNCT3_LHU: begin
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LHU, 0, 0, imm_I, 0, 0, 0);
                 end
-                endcase;
+                endcase
             end
             `OP_SX: begin
                 case (funct3)
@@ -225,10 +235,10 @@ module p_id(
                     fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
                 end
                 `FUNCT3_SH: begin
-                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SH, 0, 0, imm_S, 0, 0, 0);
                 end
                 `FUNCT3_SW: begin
-                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SB, 0, 0, imm_S, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SW, 0, 0, imm_S, 0, 0, 0);
                 end
                 endcase
             end
@@ -274,13 +284,13 @@ module p_id(
                     `FUNCT7_ADD: begin
                         fill_inst(1, rs1, 1, rs2, 1, rd, `IC_ARI, `INS_ADD, 0, 0, 0, 0, 0, 0);
                     end
-                    `FUNCT3_SUB: begin
+                    `FUNCT7_SUB: begin
                         fill_inst(1, rs1, 1, rs2, 1, rd, `IC_ARI, `INS_SUB, 0, 0, 0, 0, 0, 0);
                     end
                     endcase
                 end
                 `FUNCT3_SLL: begin
-                    fill_inst(1, rs1, 1, rs2, 1, rd, `IC_LGC, `INS_SLL, 0, 0, 0, 0, 0, 0);
+                    fill_inst(1, rs1, 1, rs2, 1, rd, `IC_SFT, `INS_SLL, 0, 0, 0, 0, 0, 0);
                 end
                 `FUNCT3_SLT: begin
                     fill_inst(1, rs1, 1, rs2, 1, rd, `IC_ARI, `INS_SLT, 0, 0, 0, 0, 0, 0);
@@ -310,54 +320,67 @@ module p_id(
                 endcase
             end
             endcase
+            inst_busy = 0;
         end
     end
     
     always @ (*) begin
         if (rst_in) begin
-            ari_op1 <= 0;
+            ari_op1 = 0;
+            r1_busy = 0;
         end
         else if (re1 && ex_is_loading && (r_addr1 == ex_w_addr)) begin
-            busy_out <= 1;
+            r1_busy = 1;
         end
         else if (re1 && ex_we && (r_addr1 == ex_w_addr)) begin
-            ari_op1 <= ex_w_addr;
+            ari_op1 = ex_w_addr;
+            r1_busy = 0;
         end
         else if (re1 && mem_we && (r_addr1 == mem_w_addr)) begin
-            ari_op1 <= mem_w_data;
+            ari_op1 = mem_w_data;
+            r1_busy = 0;
         end
         else if (re1) begin
-            ari_op1 <= r_data1;
+            ari_op1 = r_data1;
+            r1_busy = 0;
         end
         else if (!re1) begin
-            ari_op1 <= tmp_ari_op1;
+            ari_op1 = tmp_ari_op1;
+            r1_busy = 0;
         end
         else begin
-            ari_op1 <= 0;
+            ari_op1 = 0;
+            r1_busy = 0;
         end
     end
 
     always @ (*) begin
         if (rst_in) begin
-            ari_op2 <= 0;
+            ari_op2 = 0;
+            r2_busy = 0;
         end
         else if (re2 && ex_is_loading && (r_addr2 == ex_w_addr)) begin
-            busy_out <= 1;
+            r2_busy = 1;
         end
         else if (re2 && ex_we && (r_addr2 == ex_w_addr)) begin
-            ari_op2 <= ex_w_addr;
+            ari_op2 = ex_w_addr;
+            r2_busy = 0;
         end
         else if (re2 && mem_we && (r_addr2 == mem_w_addr)) begin
-            ari_op2 <= mem_w_data;
+            ari_op2 = mem_w_data;
+            r2_busy = 0;
         end
         else if (re2) begin
-            ari_op2 <= r_data1;
+            ari_op2 = r_data2;
+            r2_busy = 0;
         end
         else if (!re2) begin
-            ari_op2 <= tmp_ari_op2;
+            ari_op2 = tmp_ari_op2;
+            r2_busy = 0;
         end
         else begin
-            ari_op2 <= 0;
+            ari_op2 = 0;
+            r2_busy = 0;
         end
     end
 

@@ -22,7 +22,7 @@
 `define FUNCT3_BLT      3'b100 
 `define FUNCT3_BGE      3'b101 
 `define FUNCT3_BLTU     3'b110 
-`define FUNCTE_BGEU     3'b111 
+`define FUNCT3_BGEU     3'b111 
 
 `define FUNCT3_LB       3'b000
 `define FUNCT3_LH       3'b001
@@ -108,3 +108,5 @@
 `define INS_SRA         5'b11000  
 `define INS_OR          5'b11001 
 `define INS_AND         5'b11010  
+
+`endif

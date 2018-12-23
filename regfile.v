@@ -21,11 +21,10 @@ module regfile(
 );
 
     reg[31:0] regf[0:31];
-    assign regf[0] = 32'b0000_0000_0000_0000;
+    reg[5:0] i;
 
-    task reset_regf:
+    task reset_regf;
         begin
-            integer i;
             for (i = 0; i < 32; i = i + 1) begin 
                 regf[i] <= 0;
             end
@@ -57,7 +56,7 @@ module regfile(
 
     always @(*) begin
         if (!re2 || r_addr2 == 0) begin
-            r_data1 <= 0;
+            r_data2 <= 0;
         end
         else if (we && w_addr == r_addr2) begin
             r_data2 <= w_data;
