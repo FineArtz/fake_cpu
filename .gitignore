@@ -1,6 +1,6 @@
 *.xpr
-./cpu.cache
-./cpu.hw
-./cpu.ip_use_files
-./cpu.sim
-./cpu.srcs
+/cpu.cache
+/cpu.hw
+/cpu.ip_use_files
+/cpu.sim
+/cpu.srcs
