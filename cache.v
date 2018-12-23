@@ -15,8 +15,10 @@ module cache #(
 	parameter INDEX_BIT       = 2, //block count: 2^2 = 4
 	parameter NASSOC          = 4
 ) (
-	input             clk           ,
-	input             rst           ,
+    //common
+	input      wire       clk_in           ,
+	input      wire       rst_in           ,
+    input wire rdy_in,
 	//from cpu core
 	input      [ 1:0] rw_flag_      , //[0] for read, [1] for write
 	input      [31:0] addr_         ,
@@ -39,7 +41,7 @@ module cache #(
 
 	localparam TAG_BIT			= 32 - 2 - INDEX_BIT - WORD_SELECT_BIT;
 	localparam BYTE_SELECT_BIT	= WORD_SELECT_BIT + 2;
-	localparam SET_SELECT_BIT	= `CLOG2(NASSOC);
+	localparam SET_SELECT_BIT	= 2;
 	localparam NBLOCK 			= 1 << INDEX_BIT;
 	localparam NWORD			= 1 << WORD_SELECT_BIT;
 	localparam BLOCK_SIZE 		= (1 << WORD_SELECT_BIT) * 4 * 8;
