@@ -54,58 +54,8 @@ module p_if(
             refetch_flag = 0;
         end 
         else begin
-            /*if (!jump && is_discarded) begin
-                tmp_pc = next_pc;
-                is_discarded = 0;
-                refetch_flag = 0;
-            end*/
             if (!mem_stall) begin
                 if (!mem_busy) begin
-                /*case (state)
-                STATE_IDLE: begin
-                    read_enable = 1;
-                    busy_out = 1;
-                    tmp_pc = pc;
-                    state = STATE_FETCH_1;
-                end
-                STATE_FETCH_1: begin
-                    local_inst[31:24] = inst_in;
-                    busy_out = 1;
-                    tmp_pc = pc + 1;
-                    read_enable = 1;
-                    state = STATE_FETCH_2;
-                end
-                STATE_FETCH_2: begin
-                    local_inst[23:16] = inst_in;
-                    busy_out = 1;
-                    tmp_pc = pc + 2;
-                    read_enable = 1;
-                    state = STATE_FETCH_3;
-                end
-                STATE_FETCH_3: begin
-                    local_inst[15:8] = inst_in;
-                    busy_out = 1;
-                    tmp_pc = pc + 3;
-                    read_enable = 1;
-                    state = STATE_FETCH_4;
-                end
-                STATE_FETCH_4: begin
-                    local_inst[7:0] = inst_in;
-                    tmp_pc = pc;
-                    pc = next_pc;
-                    if (!is_discarded) begin
-                        busy_out = 0;
-                        read_enable = 0;
-                        state = STATE_IDLE;
-                    end
-                    else begin
-                        busy_out = 1;
-                        read_enable = 1;
-                        state = STATE_FETCH_1;
-                        is_discarded = 0;
-                    end
-                end
-                endcase*/
                     case (state)
                     STATE_IDLE: begin
                         re = 1;

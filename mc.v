@@ -139,19 +139,6 @@ module mc(
                 end
                 if (wait_port != NOPORT) begin
                     if (pending_rw_flag[wait_port] != 0) begin
-                        /*case (pending_data_len[wait_port])
-                        1: begin
-                            send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
-                            pending_w_data[wait_port][7:0]);
-                        end
-                        2: begin
-                            send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
-                            pending_w_data[wait_port][7:0]);
-                        end
-                        4: begin
-                            
-                        end
-                        endcase*/
                         send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
                         pending_w_data[wait_port][7:0]);
                         serv_port <= wait_port;
