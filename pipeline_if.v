@@ -48,12 +48,19 @@ module p_if(
         if (rst_in) begin
             state = STATE_IDLE;
             local_inst = 0;
-            is_discarded = 0;
             busy_out = 0;
-            tmp_pc = 0;
             refetch_flag = 0;
+            tmp_pc = 0;
         end 
         else begin
+            /*if (!jump && is_discarded) begin
+                tmp_pc = next_pc;
+                is_discarded = 0;
+                refetch_flag = 0;
+            end*/
+            if (jump && next_addr != 0 && is_discarded) begin
+                tmp_pc = next_addr;
+            end
             if (!mem_stall) begin
                 if (!mem_busy) begin
                     case (state)
@@ -82,7 +89,6 @@ module p_if(
                                 re = 1;
                                 fetch_addr = next_pc;
                                 tmp_pc = next_pc;
-                                is_discarded = 0;
                                 refetch_flag = 1;
                                 state = STATE_WAITING_FOR_RF;
                             end
@@ -116,15 +122,17 @@ module p_if(
 
     assign inst = local_inst;
 
-    always @ (posedge clk_in or posedge rst_in) begin
+    always @ (posedge clk_in) begin
         if (rst_in) begin
             next_pc <= 0;
             pc <= 0;
+            is_discarded <= 0;
         end
         else if (jump && next_addr != 0) begin
-            tmp_pc = next_addr;
-            is_discarded = 1;
-            refetch_flag = 1;
+            is_discarded <= 1;
+        end
+        else if (state == STATE_WAITING_FOR_RF) begin
+            is_discarded <= 0;
         end
         if (!mem_stall) begin
             next_pc <= tmp_pc;

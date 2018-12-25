@@ -31,11 +31,9 @@ module regfile(
         end
     endtask
 
-    always @(posedge clk_in or posedge rst_in) begin
+    always @(posedge clk_in) begin
         if (rst_in) begin 
             reset_regf();
-            r_data1 <= 0;
-            r_data2 <= 0;
         end
         else if (we) begin
             regf[w_addr] <= w_data;

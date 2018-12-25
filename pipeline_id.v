@@ -78,6 +78,21 @@ module p_id(
     assign RS1_PLUS_I = r_data1 + imm_I; //for JALR
     assign PC_PLUS_B = inst_pc + imm_B; //for BRANCH
     assign PC_PLUS_J = inst_pc + imm_J; //for JAL
+
+   /* wire IS_EQ;
+    wire IS_NE;
+    wire IS_LT;
+    wire IS_GE;
+    wire IS_LTU;
+    wire IS_GEU;
+
+    assign IS_EQ = (ari_op1 == ari_op2);
+    assign IS_NE = (ari_op1 != ari_op2);
+    assign IS_LT = ($signed(ari_op1) < $signed(ari_op2));
+    assign IS_GE = ($signed(ari_op1) >= $signed(ari_op2));
+    assign IS_LTU = (ari_op1 < ari_op2);
+    assign IS_GEU = (ari_op1 >= ari_op2);
+*/
     
     reg inst_busy;
     reg r1_busy;
