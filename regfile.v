@@ -1,6 +1,5 @@
 //regfile
 `timescale 1ns/1ps
-`include "defines.v"
 
 module regfile(
     //common
@@ -35,32 +34,44 @@ module regfile(
         if (rst_in) begin 
             reset_regf();
         end
-        else if (we) begin
-            regf[w_addr] <= w_data;
+        else if (rdy_in) begin
+            if (we) begin
+                regf[w_addr] <= w_data;
+            end
         end
     end
 
     always @(*) begin
-        if (!re1 || r_addr1 == 0) begin
+        if (rdy_in) begin
+            if (!re1 || r_addr1 == 0) begin
+                r_data1 <= 0;
+            end
+            else if (we && w_addr == r_addr1) begin
+                r_data1 <= w_data;
+            end
+            else begin
+                r_data1 <= regf[r_addr1];
+            end
+        end
+        else begin
             r_data1 <= 0;
         end
-        else if (we && w_addr == r_addr1) begin
-            r_data1 <= w_data;
-        end
-        else begin
-            r_data1 <= regf[r_addr1];
-        end
     end
 
     always @(*) begin
-        if (!re2 || r_addr2 == 0) begin
-            r_data2 <= 0;
-        end
-        else if (we && w_addr == r_addr2) begin
-            r_data2 <= w_data;
+        if (rdy_in) begin
+            if (!re2 || r_addr2 == 0) begin
+                r_data2 <= 0;
+            end
+            else if (we && w_addr == r_addr2) begin
+                r_data2 <= w_data;
+            end
+            else begin
+                r_data2 <= regf[r_addr2];
+            end
         end
         else begin
-            r_data2 <= regf[r_addr2];
+            r_data2 <= 0;
         end
     end
 

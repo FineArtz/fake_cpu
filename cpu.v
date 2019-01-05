@@ -104,6 +104,8 @@ module cpu(
     wire[31:0] id_inst;
     wire id_busy_in;
 
+    assign dbgreg_dout = id_inst_pc;
+    
     // ID to Regfile
     wire id_re1;
     wire[31:0] id_r_addr1;

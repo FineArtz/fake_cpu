@@ -82,13 +82,13 @@ module mc(
         input wire[31:0] in_addr;
         input wire[7:0] in_w_data;
         begin
-            if (in_flag == 1) begin //write
-                mem_wr <= 1;
+           if (in_flag == 1) begin  //write
+                mem_wr <= 1'b1;
                 mem_addr <= in_addr;
                 mem_w_data <= in_w_data;
             end
             else if (in_flag == 2) begin //read
-                mem_wr <= 0;
+                mem_wr <= 1'b0;
                 mem_addr <= in_addr;
             end
         end
@@ -111,20 +111,20 @@ module mc(
             state <= STATE_IDLE;
             state_busy[0] <= 0;
             state_busy[1] <= 0;
-            local_r_data[0] <= 0;
-            local_r_data[1] <= 0;
+            local_r_data[0] <= 32'b0;
+            local_r_data[1] <= 32'b0;
             wait_port <= NOPORT;
             serv_port <= NOPORT;
-            tmp_r_data <= 0;
+            tmp_r_data <= 32'b0;
             for (j = 0; j < 2; j = j + 1) begin
-                pending_rw_flag[j] <= 0;
-                pending_addr[j] <= 0;
-                pending_w_data[j] <= 0;
-                pending_data_len[j] <= 0;
-                pending_port[j] <= 0;
+                pending_rw_flag[j] <= 2'b0;
+                pending_addr[j] <= 32'b0;
+                pending_w_data[j] <= 32'b0;
+                pending_data_len[j] <= 3'b0;
+                pending_port[j] <= 2'b0;
             end
         end
-        else begin
+        else if (rdy_in) begin
             if (state != STATE_IDLE) begin
                 for (j = 0; j < 2; j = j + 1) begin
                     set_pending(j);
@@ -137,28 +137,13 @@ module mc(
                         set_pending(j);
                     end
                 end
-                if (wait_port != NOPORT) begin
-                    if (pending_rw_flag[wait_port] != 0) begin
-                        /*case (pending_data_len[wait_port])
-                        1: begin
-                            send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
-                            pending_w_data[wait_port][7:0]);
-                        end
-                        2: begin
-                            send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
-                            pending_w_data[wait_port][7:0]);
-                        end
-                        4: begin
-                            
-                        end
-                        endcase*/
-                        send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
-                        pending_w_data[wait_port][7:0]);
-                        serv_port <= wait_port;
-                        state_busy[wait_port] <= 1;
-                        state_done[wait_port] <= 0;
-                        state <= STATE_WAIT_FOR_RECV_1;
-                    end
+                if (wait_port != NOPORT && pending_rw_flag[wait_port] != 0) begin
+                    send_request(pending_rw_flag[wait_port], pending_addr[wait_port], 
+                    pending_w_data[wait_port][7:0]);
+                    serv_port <= wait_port;
+                    state_busy[wait_port] <= 1;
+                    state_done[wait_port] <= 0;
+                    state <= STATE_WAIT_FOR_RECV_1;
                 end
             end
             STATE_WAIT_FOR_RECV_1: begin
@@ -168,19 +153,14 @@ module mc(
                     state_done[pending_port[serv_port]] <= 0;
                     state <= STATE_WAIT_FOR_RECV_2;
                 end
-                2: begin
+                2, 4: begin
                     state_busy[pending_port[serv_port]] <= 1;
                     state_done[pending_port[serv_port]] <= 0;
                     send_request(pending_rw_flag[serv_port], pending_addr[serv_port] + 1, 
                     pending_w_data[serv_port][15:8]);
                     state <= STATE_WAIT_FOR_RECV_2;
                 end
-                4: begin
-                    state_busy[pending_port[serv_port]] <= 1;
-                    state_done[pending_port[serv_port]] <= 0;
-                    send_request(pending_rw_flag[serv_port], pending_addr[serv_port] + 1, 
-                    pending_w_data[serv_port][15:8]);
-                    state <= STATE_WAIT_FOR_RECV_2;
+                default: begin
                 end
                 endcase
             end
@@ -218,6 +198,8 @@ module mc(
                     pending_w_data[serv_port][23:16]);
                     state <= STATE_WAIT_FOR_RECV_3;
                 end
+                default: begin
+                end
                 endcase
             end
             STATE_WAIT_FOR_RECV_3: begin
@@ -249,6 +231,8 @@ module mc(
                     pending_w_data[serv_port][31:24]);
                     state <= STATE_WAIT_FOR_RECV_4;
                 end
+                default: begin
+                end
                 endcase
             end
             STATE_WAIT_FOR_RECV_4: begin
@@ -275,6 +259,8 @@ module mc(
                     wait_port <= NOPORT;
                 end
                 state <= STATE_IDLE;
+            end
+            default: begin
             end
             endcase
         end

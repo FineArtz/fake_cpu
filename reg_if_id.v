@@ -30,7 +30,7 @@ module r_if_id(
             id_inst <= 0;
             busy_out <= 1;
         end 
-        else if (!mem_stall) begin  
+        else if (!mem_stall && rdy_in) begin  
             id_inst_pc <= if_inst_pc;
             id_inst <= if_inst;
             busy_out <= 0;

@@ -93,6 +93,7 @@ module p_mem(
                     send_to_mc(0, 1, mem_addr, w_data, 4);
                 end
                 default: begin
+                    send_to_mc(0, 0, 0, 0, 0);
                     out_w_data <= w_data;
                 end
                 endcase
@@ -134,6 +135,11 @@ module p_mem(
                     state = STATE_IDLE;
                     send_to_mc(0, 0, 0, 0, 0);
                 end
+            end
+            default: begin
+                busy_out = 0;
+                state = STATE_IDLE;
+                send_to_mc(0, 0, 0, 0, 0);
             end
             endcase
         end

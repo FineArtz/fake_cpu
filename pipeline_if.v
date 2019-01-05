@@ -1,6 +1,5 @@
 //instruction fetch
 `timescale 1ns/1ps
-`include "defines.v"
 
 module p_if(
     //common input
@@ -20,8 +19,8 @@ module p_if(
     input wire mem_busy,
     input wire mem_done,
     //output
-    output reg[31:0] inst_pc,
-    output wire[31:0] inst,
+    (*mark_debug = "true"*) output reg[31:0] inst_pc,
+    (*mark_debug = "true"*) output wire[31:0] inst,
     output reg busy_out,
     
     input wire mem_stall
@@ -37,7 +36,7 @@ module p_if(
     reg[1:0] state;
     reg refetch_flag;
     reg is_discarded;
-
+    
     assign len_in_byte = 4;
 
     localparam STATE_IDLE = 0;
@@ -51,17 +50,15 @@ module p_if(
             busy_out = 0;
             refetch_flag = 0;
             tmp_pc = 0;
+            re = 0;
+            fetch_addr = 0;
+            inst_pc = 0;
         end 
         else begin
-            /*if (!jump && is_discarded) begin
-                tmp_pc = next_pc;
-                is_discarded = 0;
-                refetch_flag = 0;
-            end*/
-            if (jump && next_addr != 0 && is_discarded) begin
+            if (jump && next_addr != 0 && is_discarded && rdy_in) begin
                 tmp_pc = next_addr;
             end
-            if (!mem_stall) begin
+            if (!mem_stall && rdy_in) begin
                 if (!mem_busy) begin
                     case (state)
                     STATE_IDLE: begin
@@ -93,6 +90,8 @@ module p_if(
                                 state = STATE_WAITING_FOR_RF;
                             end
                         end
+                        else begin
+                        end
                     end
                     STATE_WAITING_FOR_RF: begin
                         if (mem_busy) begin
@@ -111,11 +110,15 @@ module p_if(
                             state = STATE_IDLE;
                         end
                     end
+                    default: begin
+                    end
                     endcase
                 end
                 else begin
                     refetch_flag = 0;
                 end
+            end
+            else begin
             end
         end
     end
@@ -128,13 +131,13 @@ module p_if(
             pc <= 0;
             is_discarded <= 0;
         end
-        else if (jump && next_addr != 0) begin
+        else  if (jump && next_addr != 0) begin
             is_discarded <= 1;
         end
         else if (state == STATE_WAITING_FOR_RF) begin
             is_discarded <= 0;
         end
-        if (!mem_stall) begin
+        if (!mem_stall && rdy_in) begin
             next_pc <= tmp_pc;
             pc <= tmp_pc;
         end

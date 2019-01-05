@@ -53,7 +53,7 @@ module r_id_ex(
             ex_offset <= 0;
             busy_out <= 1;
         end
-        else if (!mem_stall) begin
+        else if (!mem_stall && rdy_in) begin
             ex_inst_catagory <= id_inst_catagory;
             ex_local_opcode <= id_local_opcode;
             ex_ari_op1 <= id_ari_op1;

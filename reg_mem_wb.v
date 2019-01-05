@@ -31,7 +31,7 @@ module r_mem_wb(
             wb_w_addr <= 0;
             wb_w_data <= 0;
         end
-        else if (!mem_stall) begin
+        else if (!mem_stall && rdy_in) begin
             wb_we <= mem_we;
             wb_w_addr <= mem_w_addr;
             wb_w_data <= mem_w_data;

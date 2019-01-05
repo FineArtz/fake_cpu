@@ -70,6 +70,10 @@ module p_ex(
                     out_w_data = (ari_op1 < ari_op2);
                     mem_addr = 0;
                 end
+                default: begin
+                    out_w_data = 0;
+                    mem_addr = 0;
+                end
                 endcase
             end
             `IC_SFT: begin
@@ -84,6 +88,10 @@ module p_ex(
                 end
                 `INS_SRA: begin
                     out_w_data = $signed(ari_op1) >>> ari_op2[4:0];
+                    mem_addr = 0;
+                end
+                default: begin
+                    out_w_data = 0;
                     mem_addr = 0;
                 end
                 endcase
@@ -102,12 +110,20 @@ module p_ex(
                     out_w_data = ari_op1 & ari_op2;
                     mem_addr = 0;
                 end
+                default: begin
+                    out_w_data = 0;
+                    mem_addr = 0;
+                end
                 endcase
             end
             `IC_JMP: begin
                 case (local_opcode)
                 `INS_JAL, `INS_JALR: begin
                     out_w_data = link_addr;
+                    mem_addr = 0;
+                end
+                default: begin
+                    out_w_data = 0;
                     mem_addr = 0;
                 end
                 endcase

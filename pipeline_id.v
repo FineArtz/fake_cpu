@@ -78,21 +78,6 @@ module p_id(
     assign RS1_PLUS_I = r_data1 + imm_I; //for JALR
     assign PC_PLUS_B = inst_pc + imm_B; //for BRANCH
     assign PC_PLUS_J = inst_pc + imm_J; //for JAL
-
-   /* wire IS_EQ;
-    wire IS_NE;
-    wire IS_LT;
-    wire IS_GE;
-    wire IS_LTU;
-    wire IS_GEU;
-
-    assign IS_EQ = (ari_op1 == ari_op2);
-    assign IS_NE = (ari_op1 != ari_op2);
-    assign IS_LT = ($signed(ari_op1) < $signed(ari_op2));
-    assign IS_GE = ($signed(ari_op1) >= $signed(ari_op2));
-    assign IS_LTU = (ari_op1 < ari_op2);
-    assign IS_GEU = (ari_op1 >= ari_op2);
-*/
     
     reg inst_busy;
     reg r1_busy;
@@ -208,6 +193,9 @@ module p_id(
                         fill_inst(1, rs1, 1, rs2, 0, 0, `IC_JMP, `INS_BGEU, 0, 0, 0, 0, 0, 0);
                     end
                 end
+                default: begin
+                    fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+                end
                 endcase
             end
             `OP_LX: begin
@@ -227,6 +215,9 @@ module p_id(
                 `FUNCT3_LHU: begin
                     fill_inst(1, rs1, 0, 0, 1, rd, `IC_LAS, `INS_LHU, 0, 0, imm_I, 0, 0, 0);
                 end
+                default: begin
+                    fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+                end
                 endcase
             end
             `OP_SX: begin
@@ -239,6 +230,9 @@ module p_id(
                 end
                 `FUNCT3_SW: begin
                     fill_inst(1, rs1, 1, rs2, 0, 0, `IC_LAS, `INS_SW, 0, 0, imm_S, 0, 0, 0);
+                end
+                default: begin
+                    fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
                 end
                 endcase
             end
@@ -273,7 +267,13 @@ module p_id(
                     `FUNCT7_SRAI: begin
                         fill_inst(1, rs1, 0, 0, 1, rd, `IC_SFT, `INS_SRA, 0, rs2, 0, 0, 0, 0);
                     end
+                    default: begin
+                        fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+                    end
                     endcase
+                end
+                default: begin
+                    fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
                 end
                 endcase
             end
@@ -286,6 +286,9 @@ module p_id(
                     end
                     `FUNCT7_SUB: begin
                         fill_inst(1, rs1, 1, rs2, 1, rd, `IC_ARI, `INS_SUB, 0, 0, 0, 0, 0, 0);
+                    end
+                    default: begin
+                        fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
                     end
                     endcase
                 end
@@ -309,6 +312,9 @@ module p_id(
                     `FUNCT7_SRA: begin
                         fill_inst(1, rs1, 1, rs2, 1, rd, `IC_SFT, `INS_SRA, 0, 0, 0, 0, 0, 0);
                     end
+                    default: begin
+                        fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+                    end
                     endcase
                 end
                 `FUNCT3_OR: begin
@@ -317,7 +323,13 @@ module p_id(
                 `FUNCT3_AND: begin
                     fill_inst(1, rs1, 1, rs2, 1, rd, `IC_LGC, `INS_AND, 0, 0, 0, 0, 0, 0);
                 end
+                default: begin
+                    fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
+                end
                 endcase
+            end
+            default: begin
+                fill_inst(0, rs1, 0, rs2, 0, rd, `IC_EMP, `INS_EMP, 0, 0, 0, 0, 0, 0);
             end
             endcase
             inst_busy = 0;
@@ -330,10 +342,11 @@ module p_id(
             r1_busy = 0;
         end
         else if (re1 && ex_is_loading && (r_addr1 == ex_w_addr)) begin
+            ari_op1 = 0;
             r1_busy = 1;
         end
         else if (re1 && ex_we && (r_addr1 == ex_w_addr)) begin
-            ari_op1 = ex_w_addr;
+            ari_op1 = ex_w_data;
             r1_busy = 0;
         end
         else if (re1 && mem_we && (r_addr1 == mem_w_addr)) begin
@@ -360,10 +373,11 @@ module p_id(
             r2_busy = 0;
         end
         else if (re2 && ex_is_loading && (r_addr2 == ex_w_addr)) begin
+            ari_op2 = 0;
             r2_busy = 1;
         end
         else if (re2 && ex_we && (r_addr2 == ex_w_addr)) begin
-            ari_op2 = ex_w_addr;
+            ari_op2 = ex_w_data;
             r2_busy = 0;
         end
         else if (re2 && mem_we && (r_addr2 == mem_w_addr)) begin

@@ -42,7 +42,7 @@ module r_ex_mem(
             mem_mem_addr <= 0;
             busy_out <= 1;
         end
-        else if (!mem_stall) begin
+        else if (!mem_stall && rdy_in) begin
             mem_we <= ex_we;
             mem_w_addr <= ex_w_addr;
             mem_w_data <= ex_w_data;
