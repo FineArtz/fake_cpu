@@ -5,7 +5,6 @@
 module p_id(
     //common
     input rst_in,
-    input rdy_in,
     //instruction
     input wire[31:0] inst_pc,
     input wire[31:0] inst,

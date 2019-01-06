@@ -192,7 +192,7 @@ uart #(.SYS_CLK_FREQ(SYS_CLK_FREQ),
   .parity_err(parity_err)
 );
 
-always @*
+always @(posedge clk)
   begin
     io_dout = 8'h00;
     if (io_en & !io_wr)

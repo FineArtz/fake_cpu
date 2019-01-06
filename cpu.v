@@ -216,7 +216,6 @@ module cpu(
 
     p_id p_id0(
         .rst_in(rst_in),
-        .rdy_in(rdy_in),
         .inst_pc(id_inst_pc),
         .inst(id_inst),
         .busy_in(id_busy_in),
@@ -273,7 +272,6 @@ module cpu(
 
     p_ex p_ex0(
         .rst_in(rst_in),
-        .rdy_in(rdy_in),
         .inst_catagory(ex_inst_catagory),
         .local_opcode(ex_local_opcode),
         .ari_op1(ex_ari_op1),
@@ -311,6 +309,7 @@ module cpu(
     );
 
     p_mem p_mem0(
+        .clk_in(clk_in),
         .rst_in(rst_in),
         .rdy_in(rdy_in),
         .we(mem_mem_we),

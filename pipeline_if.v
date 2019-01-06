@@ -19,8 +19,8 @@ module p_if(
     input wire mem_busy,
     input wire mem_done,
     //output
-    (*mark_debug = "true"*) output reg[31:0] inst_pc,
-    (*mark_debug = "true"*) output wire[31:0] inst,
+    output reg[31:0] inst_pc,
+    output wire[31:0] inst,
     output reg busy_out,
     
     input wire mem_stall
@@ -43,71 +43,72 @@ module p_if(
     localparam STATE_WAITING_FOR_MC = 1;
     localparam STATE_WAITING_FOR_RF = 2;
 
-    always @ (*) begin
+    always @ (posedge clk_in or posedge rst_in) begin
         if (rst_in) begin
-            state = STATE_IDLE;
-            local_inst = 0;
-            busy_out = 0;
-            refetch_flag = 0;
-            tmp_pc = 0;
-            re = 0;
-            fetch_addr = 0;
-            inst_pc = 0;
+            state <= STATE_IDLE;
+            local_inst <= 0;
+            busy_out <= 0;
+            refetch_flag <= 0;
+            tmp_pc <= 0;
+            re <= 0;
+            fetch_addr <= 0;
+            inst_pc <= 0;
+            is_discarded <= 0;
         end 
         else begin
-            if (jump && next_addr != 0 && is_discarded && rdy_in) begin
-                tmp_pc = next_addr;
+            if (jump && next_addr != 0 && rdy_in) begin
+                tmp_pc <= next_addr;
+                is_discarded <= 1;
+            end
+            else if (state == STATE_WAITING_FOR_RF) begin
+                is_discarded <= 0;
             end
             if (!mem_stall && rdy_in) begin
                 if (!mem_busy) begin
                     case (state)
                     STATE_IDLE: begin
-                        re = 1;
-                        fetch_addr = pc;
-                        state = STATE_WAITING_FOR_MC;
-                        busy_out = 1;
+                        re <= 1;
+                        fetch_addr <= pc;
+                        state <= STATE_WAITING_FOR_MC;
+                        busy_out <= 1;
                     end
                     STATE_WAITING_FOR_MC: begin
-                        if (mem_busy) begin
-                            busy_out = 1;
+                        if (!mem_done) begin
+                            busy_out <= 1;
                         end
-                        else if (mem_done) begin
-                            if (!is_discarded) begin
-                                local_inst = inst_in;
-                                inst_pc = pc;
-                                re = 0;
-                                fetch_addr = 0;
-                                tmp_pc = next_pc + 4;
-                                busy_out = 0;
-                                state = STATE_IDLE;
-                            end
-                            else begin
-                                busy_out = 1;
-                                re = 1;
-                                fetch_addr = next_pc;
-                                tmp_pc = next_pc;
-                                refetch_flag = 1;
-                                state = STATE_WAITING_FOR_RF;
-                            end
+                        else if (!is_discarded) begin
+                            local_inst <= inst_in;
+                            inst_pc <= pc;
+                            re <= 0;
+                            fetch_addr <= 0;
+                            tmp_pc <= next_pc + 4;
+                            busy_out <= 0;
+                            state <= STATE_IDLE;
                         end
                         else begin
+                            busy_out <= 1;
+                            re <= 1;
+                            fetch_addr <= next_pc;
+                            tmp_pc <= next_pc;
+                            refetch_flag <= 1;
+                            state <= STATE_WAITING_FOR_RF;
                         end
                     end
                     STATE_WAITING_FOR_RF: begin
                         if (mem_busy) begin
-                            busy_out = 1;
+                            busy_out <= 1;
                         end
                         else if (refetch_flag) begin
-                            busy_out = 1;
+                            busy_out <= 1;
                         end
                         else if (mem_done) begin
-                            local_inst = inst_in;
-                            inst_pc = pc;
-                            re = 0;
-                            fetch_addr = 0;
-                            tmp_pc = next_pc + 4;
-                            busy_out = 0;
-                            state = STATE_IDLE;
+                            local_inst <= inst_in;
+                            inst_pc <= pc;
+                            re <= 0;
+                            fetch_addr <= 0;
+                            tmp_pc <= next_pc + 4;
+                            busy_out <= 0;
+                            state <= STATE_IDLE;
                         end
                     end
                     default: begin
@@ -115,10 +116,12 @@ module p_if(
                     endcase
                 end
                 else begin
-                    refetch_flag = 0;
+                    refetch_flag <= 0;
+                    busy_out <= 1;
                 end
             end
             else begin
+                busy_out <= 1;
             end
         end
     end
@@ -129,15 +132,8 @@ module p_if(
         if (rst_in) begin
             next_pc <= 0;
             pc <= 0;
-            is_discarded <= 0;
         end
-        else  if (jump && next_addr != 0) begin
-            is_discarded <= 1;
-        end
-        else if (state == STATE_WAITING_FOR_RF) begin
-            is_discarded <= 0;
-        end
-        if (!mem_stall && rdy_in) begin
+        else if (!mem_stall && rdy_in) begin
             next_pc <= tmp_pc;
             pc <= tmp_pc;
         end
